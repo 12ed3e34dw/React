@@ -1,22 +1,30 @@
 
 import {toast} from "react-toastify";
 import {socket} from "./MySocketio"
+import {useEffect, useState} from "react";
+import ChatMessageList from "./ChatMessageList";
+import ChatMessageForm from "./ChatMessageForm";
 export  default function ChatWrapper() {
 
-const onConnect = ()=>{
-    toast.info('connect')
-}
+      //Сообщение
+    const [messages, setMessages] = useState([]);
 
-const onDisconnect = ()=>{
-    toast.error('disconnect')
-}
 
-socket.on('connect', onConnect);
-socket.on('disconnect', onDisconnect);
+    //Один раз подключается и будет второй раз присоединятся
+    useEffect(() => {
+        socket.on('new_message', (data) => {
+
+            setMessages(prevMessage=>[...prevMessage,data]);
+        })
+    })
+
 
     return(
         <>
-        <h1>Chat</h1>
+            <h1>Chat</h1>
+            <ChatMessageList messages={messages}/>
+            <hr/>
+            <ChatMessageForm/>
         </>
     )
 }
